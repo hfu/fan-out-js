@@ -1,0 +1,20 @@
+{
+  "name": "fan-out-js",
+  "version": "1.0.0",
+  "description": "JavaScript implementation of fan-out(.rb) for Node",
+  "main": "fan-out.js",
+  "scripts": {
+    "test": "node fan-out /export/github/openmaptiles/data/tiles.mbtiles test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hfu/fan-out-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hfu/fan-out-js/issues"
+  },
+  "homepage": "https://github.com/hfu/fan-out-js#readme"
+}
