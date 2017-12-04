@@ -9,7 +9,7 @@ const fan_out = function(mbtiles, dir) {
       return
     }
   })
-  let z, x, y, data, path
+  let z, x, y, data, path, buf
   db.each("SELECT * FROM tiles", (err, r) => {
     if(err) {
       console.error(err)
@@ -18,17 +18,18 @@ const fan_out = function(mbtiles, dir) {
     z = r.zoom_level
     x = r.tile_column
     y = (1 << z) - r.tile_row - 1
-    zlib.unzip(r.tile_data, (err, buf) => {
+    buf = zlib.unzip(r.tile_data, (err, buf) => {
       if(err) {
         console.error(err)
 	return
       }
-      path = `${dir}/${z}/${x}`
-      fs.mkdirsSync(path)
-      path = `${path}/${y}.mvt`
-      fs.writeFileSync(path, buf)
-      console.log(`writing ${path}`)
+      return buf
     })
+    path = `${dir}/${z}/${x}`
+    fs.mkdirsSync(path)
+    path = `${path}/${y}.mvt`
+    fs.writeFile(path, buf)
+    console.log(`writing ${path}`)
   })
   db.close
 }
