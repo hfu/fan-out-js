@@ -1,4 +1,4 @@
-tiles.mbtiles
+*.mbtiles
 test
 
 # Logs
@@ -59,4 +59,3 @@ typings/
 
 # dotenv environment variables file
 .env
-
