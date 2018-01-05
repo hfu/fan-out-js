@@ -1,47 +1,30 @@
 const fs = require('fs-extra')
-const sqlite3 = require('sqlite3').verbose()
+const Database = require('better-sqlite3')
 const zlib = require('zlib')
 
+const report = function(c, count, path) {
+  if(c === count || c % 1000 === 0) {
+    console.log(`${c} of ${count} (${Math.round(c * 100.0 / count)}%) ${path}`)
+  }
+}
 const run = function(mbtiles, dir) {
-  console.log(mbtiles)
-  const db = new sqlite3.Database(mbtiles, sqlite3.OPEN_READONLY, err => {
-    if(err) {
-      console.error(err)
-      return
-    }
-  })
-  db.each("SELECT * FROM tiles", (err, r) => {
-    if(err) {
-      console.error(err)
-      return
-    }
-    console.log({
-      z: r.zoom_level,
-      x: r.tile_column,
-      y: (1 << r.zoom_level) - r.tile_row - 1,
-      zbuf: r.tile_data
-    })
-  })
+  const db = new Database(mbtiles, {readonly: true})
+  const count = db.prepare('SELECT count(*) FROM tiles').get()['count(*)']
+  let c = 0
+  for(const r of db.prepare('SELECT * FROM tiles').iterate()) {
+    const buf = zlib.unzipSync(r.tile_data)
+    const z = r.zoom_level
+    const x = r.tile_column
+    const y = (1 << z) - r.tile_row - 1
+    fs.mkdirsSync(`${dir}/${z}/${x}`)
+    fs.writeFileSync(`${dir}/${z}/${x}/${y}.mvt`, buf)
+    report(++c, count, `${dir}/${z}/${x}/${y}.mvt`)
+  }
   db.close
 }
-/*
-    buf = zlib.unzip(r.tile_data, (err, buf) => {
-      if(err) {
-        console.error(err)
-	return
-      }
-      return buf
-    })
-    path = `${dir}/${z}/${x}`
-    fs.mkdirsSync(path)
-    path = `${path}/${y}.mvt`
-    fs.writeFile(path, buf)
-    console.log(`writing ${path}`)
-  })
-*/
 
 if(process.argv.length == 4) {
   run(process.argv[2], process.argv[3])
 } else {
-  console.log("usage: node fan-out {tiles.mbtiles} {tiles}")
+  console.log("usage: node fan-out {tiles.mbtiles} {tiles_dir}")
 }
