@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/hfu/fan-out-js#readme",
   "dependencies": {
+    "better-sqlite3": "^4.0.3",
     "fs-extra": "^4.0.2",
     "sqlite3": "^3.1.13",
     "zlib": "^1.0.5"
