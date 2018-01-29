@@ -17,8 +17,8 @@ const run = function (mbtiles, dir) {
     const x = r.tile_column
     const y = (1 << z) - r.tile_row - 1
     fs.mkdirsSync(`${dir}/${z}/${x}`)
-    fs.writeFileSync(`${dir}/${z}/${x}/${y}.mvt`, buf)
-    report(++c, count, `${dir}/${z}/${x}/${y}.mvt`)
+    fs.writeFileSync(`${dir}/${z}/${x}/${y}.pbf`, buf)
+    report(++c, count, `${dir}/${z}/${x}/${y}.pbf`)
   }
   db.close()
 }
